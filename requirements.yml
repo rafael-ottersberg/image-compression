@@ -1,0 +1,7 @@
+name: image-compression
+dependencies:
+  - python=3.8
+  - Pillow
+  - pip
+  - pip:
+    - python-dotenv
