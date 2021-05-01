@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 from PIL import Image
 from shutil import copy2
 import os
+import threading
 
 load_dotenv()
 
@@ -11,6 +12,8 @@ website_dir = os.getenv("WEB_PATH")
 
 base = int(os.getenv("SIZE"))
 quality = int(os.getenv("QUALITY"))
+
+interval = int(os.getenv("INTERVAL"))
 
 def resize_image(filename):
     basewidth = 300
@@ -42,7 +45,7 @@ def calculate_size(size, base):
 def use_fullsize(filename):
     copy2(upload_dir + filename, website_dir + filename)
 
-def move_original(filename, failed=false):
+def move_original(filename, failed=False):
     if failed:
         os.rename(upload_dir + filename, failed_dir + filename)
     else:
@@ -52,7 +55,7 @@ def list_files(directory):
     files_and_folders = os.listdir(directory)
     return files_and_folders
 
-def main():
+def update_images():
     filenames = list_files(upload_dir)
     
 
@@ -69,6 +72,13 @@ def main():
             move_original(filename, failed=True)
         else:
             move_original(filename)
+
+def startTimer():
+    threading.Timer(interval, startTimer).start()
+    update_images()
+    
+def main():
+    startTimer()
 
         
 
