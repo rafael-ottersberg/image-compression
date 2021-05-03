@@ -3,6 +3,9 @@ from PIL import Image
 from shutil import copy2
 import os
 import threading
+import whatimage
+import pyheif
+import io
 
 load_dotenv()
 
@@ -17,8 +20,28 @@ interval = int(os.getenv("INTERVAL"))
 
 def resize_image(filename):
     basewidth = 300
-    img = Image.open(upload_dir + filename)
+
+    filepath = upload_dir + filename
+
+    with open(filepath, 'rb') as f:
+        data = f.read()
+
+    fmt = whatimage.identify_image(data)
+
+    if fmt in ['heic', 'avif']:
+        i = pyheif.read_heif(filepath)
+
+        img = Image.frombytes(
+            i.mode, 
+            i.size, 
+            i.data,
+            "raw",
+            i.mode,
+            i.stride,)
     
+    else:
+        img = Image.open(filepath)
+
     new_size = calculate_size(img.size, base)
     img = img.resize(new_size, Image.ANTIALIAS).convert('RGB')
 
