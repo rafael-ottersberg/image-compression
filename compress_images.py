@@ -6,6 +6,7 @@ import threading
 import whatimage
 import pyheif
 import io
+import secret
 
 load_dotenv()
 
@@ -48,8 +49,9 @@ def resize_image(filename):
     img.save(website_dir + create_new_filename(filename), quality=quality)
 
 def create_new_filename(filename):
+    tok = secrets.token_urlsafe(32)
     name, ending = filename.rsplit('.',1)
-    new_filename = name + ".jpg"
+    new_filename = name + tok + ".jpg"
 
     return new_filename
 
@@ -66,7 +68,8 @@ def calculate_size(size, base):
     return (width, height)
 
 def use_fullsize(filename):
-    copy2(upload_dir + filename, website_dir + filename)
+    tok = secrets.token_urlsafe(32)
+    copy2(upload_dir + filename, website_dir + filename.rsplit(".")[0] + tok + "." + filename.rsplit(".")[1])
 
 def move_original(filename, failed=False):
     if failed:
