@@ -6,13 +6,14 @@ import threading
 import whatimage
 import pyheif
 import io
-import secret
+import secrets
 
 load_dotenv()
 
 upload_dir = os.getenv("UPLOAD_PATH")
 storage_dir = os.getenv("STORAGE_PATH")
 website_dir = os.getenv("WEB_PATH")
+failed_dir = os.getenv("FAILED_PATH")
 
 base = int(os.getenv("SIZE"))
 quality = int(os.getenv("QUALITY"))
@@ -94,7 +95,8 @@ def update_images():
                 use_fullsize(filename)
             else:
                 resize_image(filename)
-        except:
+        except Exception as e:
+            print(e)
             move_original(filename, failed=True)
         else:
             move_original(filename)
